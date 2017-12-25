@@ -8,7 +8,7 @@ coast_line::~coast_line()
 coast_node* coast_line::find(double x, double pos) {
 	coast_node* work = root;
 	while (!work->is_leaf()) {
-		if (x <= work->break_point(pos)) { work = work->lc; }
+		if (x <= work->break_point(pos)+1e-3) { work = work->lc; }
 		else work = work->rc;
 	}
 	return work;
@@ -59,6 +59,7 @@ coast_node*  coast_line::insert(const site& to_insert, std::vector<half_edge*>& 
 	inter_2->edge = e2;
 
 	to_replace->parent = leaf_2;
+	to_replace->edge = e1;
 	size++;
     return to_replace;
 }
@@ -74,6 +75,8 @@ coast_node* coast_line::remove(Event_circle* p, vertex* vt, std::vector<half_edg
 	coast_node* work = to_move->parent;
 	coast_node* another_inter = work->parent;
 
+	coast_node* left=NULL;
+	coast_node* right = NULL;
 	to_move->pred->suc = to_move->suc;
 	to_move->suc->pred = to_move->pred;
 	// find another inter node use same arc. 
@@ -94,6 +97,8 @@ coast_node* coast_line::remove(Event_circle* p, vertex* vt, std::vector<half_edg
 				}
 				another_inter = another_inter->parent;
 			}
+			left = work;
+			right = another_inter;
 		}
 	else {
 		if (work->is_lc()) {
@@ -112,14 +117,17 @@ coast_node* coast_line::remove(Event_circle* p, vertex* vt, std::vector<half_edg
 			}
 			another_inter = another_inter->parent;
 		}
+		right = work;
+		left = another_inter;
 	}
 	// set vertex to edge
 	work->edge->ori = vt;
 	vt->inc_edge = work->edge;
 
+
 	// set edge relation
-	work->edge->succ = another_inter->edge->twin;
-	another_inter->edge->twin->pre = work->edge;
+	left->edge->succ = right->edge->twin;
+	right->edge->twin->pre = left->edge;
 
 	// add new edge
 	int size_edge = edge_vec.size();
@@ -130,10 +138,10 @@ coast_node* coast_line::remove(Event_circle* p, vertex* vt, std::vector<half_edg
 	new_edge_a->ori = vt;
 	
 	// set edge relation
-	new_edge_a->succ = work->edge->twin;
-	work->edge->twin->pre = new_edge_a;
-	another_inter->edge->succ = new_edge_b;
-	new_edge_b->pre = another_inter->edge;
+	new_edge_a->succ = left->edge->twin;
+	left->edge->twin->pre = new_edge_a;
+	right->edge->succ = new_edge_b;
+	new_edge_b->pre = right->edge;
 
 	// set new edge, have no ori
 	another_inter->edge = new_edge_b;

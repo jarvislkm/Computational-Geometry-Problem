@@ -1,5 +1,5 @@
 #include "func.h"
-
+#include <math.h>
 cir_res circle_bottom(site& a, site& b, site& c) {
 	double A1 = 2 * (b.p.x - a.p.x);
 	double B1 = 2 * (b.p.y - a.p.y);
@@ -24,11 +24,39 @@ bool sort_site(site a, site b) {
 	else return false;
 }
 
+bool to_left(point a, point b, point c) {
+	double tem1 = a.x*b.y + b.x*c.y + c.x*a.y - b.y*c.x - c.y*a.x - a.y*b.x;
+	if (tem1 >= 0) return true;
+	else return false;
+}
+
 cir_res circle_detect(coast_node* node) {
 	cir_res result;
+	double k1, k2;
+	int d1=0, d2=0;
 	if (node->suc && node->pred && node->suc->leaf.id != node->pred->leaf.id) {
+		if (node->pred->leaf.p.y != node->leaf.p.y) {
+			 k1 = -(node->pred->leaf.p.x - node->leaf.p.x)/(node->pred->leaf.p.y - node->leaf.p.y);
+		}
+		else k1 = INFINITY;
+		if (node->suc->leaf.p.y != node->leaf.p.y) {
+			k2 = -(node->suc->leaf.p.x - node->leaf.p.x)/(node->suc->leaf.p.y - node->leaf.p.y) ;
+		}
+		else k2 = INFINITY;
+
 		result = circle_bottom(node->pred->leaf, node->leaf, node->suc->leaf);
-		result.success = true;
+
+		if (node->pred->leaf.p.y > node->leaf.p.y) { d1 = -1; }
+		else if (node->pred->leaf.p.y < node->leaf.p.y) { d1 = 1; }
+		if (node->leaf.p.y > node->suc->leaf.p.y) { d2 = -1; }
+		else if (node->leaf.p.y < node->suc->leaf.p.y) { d2 = 1; }
+
+		if (d1 == -1 && d2 == 1) result.success = false;
+		else if ((d1 >= 0 && d2 == -1) || (d1 == 1 && d2 == 0)) result.success = true;
+		else if (k1>k2) {
+			result.success = true;
+		}
+		else result.success = false;
 	}
 	else result.success = false;
 	return result;

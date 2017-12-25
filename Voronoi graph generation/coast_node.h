@@ -3,20 +3,21 @@
 #include "site.h"
 #include "Event_circle.h"
 #include "half_edge.h"
+#include <math.h>
 
 class coast_node
 {
 public:
-	explicit coast_node(site p1a, site p2a) :p1(p1a), p2(p2a) { lc = NULL; rc = NULL; pred = NULL; suc = NULL; re_event = NULL; edge = NULL; };
-	explicit coast_node(site l) :leaf(l), p1(l), p2(l) { lc = NULL; rc = NULL; pred = NULL; suc = NULL; re_event = NULL;  edge = NULL; };
-	explicit coast_node() { lc = NULL; rc = NULL; pred = NULL; suc = NULL; re_event = NULL;};
+	explicit coast_node(site p1a, site p2a) :p1(p1a), p2(p2a) { lc = NULL; rc = NULL; pred = NULL; suc = NULL; re_event = NULL; edge = NULL; parent = NULL; };
+	explicit coast_node(site l) :leaf(l), p1(l), p2(l) { lc = NULL; rc = NULL; pred = NULL; suc = NULL; re_event = NULL;  edge = NULL; parent = NULL;};
+	explicit coast_node() { lc = NULL; rc = NULL; pred = NULL; suc = NULL; re_event = NULL; edge = NULL; parent = NULL;};
 	site p1, p2;
 	site leaf;
 	double break_point(double po) {
-		if (lc && rc) {
+//		if (lc && rc) {
 			return intersection(p1, p2, po);
-		}
-		else return 0;
+//		}
+//		else return 0;
 	}
 	bool is_leaf() { return !(lc&&rc); }
 	bool is_root() { return !parent; }

@@ -36,12 +36,14 @@ void eventqueue::insert(Event_circle* to_insert) {
 
 bool eventqueue::delete_element(Event_circle* to_delete) {
 	int i = 0;
+	if (!to_delete) return false;
 	while (i < queue.size()) {
 		if (queue[i] == to_delete) { 
 			queue[i] = queue[queue.size() - 1];
 			delete to_delete;
 			queue.pop_back();
 			precolate_Down(i);
+			if(i<queue.size())	percolate_Up(i);
 			return true;
 		}
 		i++;

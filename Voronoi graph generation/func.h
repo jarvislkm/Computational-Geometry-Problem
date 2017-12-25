@@ -12,3 +12,4 @@ struct cir_res {
 cir_res circle_detect(coast_node* node);
 cir_res circle_bottom(site& a, site& b, site& c);
 bool sort_site(site a, site b);
+bool to_left(point a, point b, point c);
