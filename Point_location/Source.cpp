@@ -86,10 +86,10 @@ int main() {
 		dag.insert(s);
 	}
 
-	for (auto p : point_vec) {
-		long int result = find_point(*p, dag);
-		if (result>0) cout << result << endl;
-		else cout << "N" << endl;
-	}
+	// for (auto p : point_vec) {
+		// long int result = find_point(*p, dag);
+		// if (result>0) cout << result << endl;
+		// else cout << "N" << endl;
+	// }
 	return 0;
 }

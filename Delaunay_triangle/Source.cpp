@@ -77,20 +77,10 @@ void read(long int & number, vector<site>& site_point, long int & test_point_num
 	double a, b;
 	while (s < number) {
 		cin >> a >> b;
-		a = a / 10;
-		b = b / 10;
+		a = a / 100;
+		b = b / 100;
 		site to_add(a, b, s++);
 		site_point.push_back(to_add);
-	}
-	cin >> test_point_num;
-	s = 0;
-	while (s<test_point_num) {
-		cin >> a >> b;
-		a = a / 10;
-		b = b / 10;
-		s++;
-		point to_add(a, b);
-		test_point.push_back(to_add);
 	}
 }
 
@@ -193,42 +183,20 @@ int main() {
 			count++;
 		} while (start && start != record);
 	}
-
-	long int count = 1;
-	for (auto q : test_point) { // This is to calculate the point in each hall; step by step method find the neighbor is closest to target. 
-		face* test_face = face_vec.at(face_vec.size() / 2); //start from the center point
-		bool stop = true;
-		while (stop) {
-			half_edge* start = test_face->inc_edge;
-			while (start->pre && start->pre != test_face->inc_edge) {
-				start = start->pre;
-			}
-			half_edge* record = start;
-			if (!in_face(q, test_face) ) {
-				double length_r = INFINITY;
-				face* next = 0;
-				int id_r;
-				do
-				{
-					site m = site_point[start->twin->inc_face->id];
-					double length = (m.p.x - q.x)*(m.p.x - q.x) + (m.p.y - q.y)*(m.p.y - q.y);
-					if (length < length_r) {
-						length_r = length;
-						next = start->twin->inc_face;
-						id_r = start->twin->inc_face->id;
-					}
-					start = start->succ;
-				} while (start && start != record);
-				test_face = next;
-			  }
-			  else {
-						stop = false;
-					}
-		  }
-    	  printf("%ld\r\n", site_point[test_face->id].id);
+	long long int sum = 0;
+	for (long int i = 0; i < edge_vec.size(); i += 2) {
+		long int id_a = edge_vec.at(i)->inc_face->id;
+		long int id_b = edge_vec.at(i)->twin->inc_face->id;
+		long int real_a = site_point.at(id_a).id+1;
+		long int real_b = site_point.at(id_b).id+1;
+		sum += real_a;
+		sum += real_b;
+	}
+	long long int result_f = edge_vec.size() / 2 + 1;
+	long long int result = sum%result_f;
+    printf("%ld\r\n", result);
 //		out << site_point[test_face->id].id << endl;
 //		out << q.x << " " << q.y << endl;
 //		out << site_point.at(test_face->id).p.x << " " << site_point.at(test_face->id).p.y << endl;
-	}
 	return 0;
 }
