@@ -1,32 +1,32 @@
 #include "range_tree.h"
 #include "func.h"
 #include <algorithm>
-using namespace std;
-node* range_tree::construct(vector<point>& p_v) {
-	vector<node*> work;
-	vector<node*> next;
+
+RangeTreeNode* RangeTree::construct(std::vector<Point>& p_v) {
+	std::vector<RangeTreeNode*> work;
+	std::vector<RangeTreeNode*> next;
 	for (auto p : p_v) {
-		node* n = new node(p);
+		RangeTreeNode* n = new RangeTreeNode(p);
 		n->ylist.push_back(p);
 		work.push_back(n);
 	}
 	while (work.size() > 1) {
 		for (long i = 0; i < work.size(); i += 2) {
 			if (i != work.size() - 1) {
-				node* find = work.at(i);
+				RangeTreeNode* find = work.at(i);
 				while (find->rc) {
 					find = find->rc;
 				}
-				node* n = new node(find->p);
+				RangeTreeNode* n = new RangeTreeNode(find->p);
 				n->lc = work.at(i);
 				n->rc = work.at(i + 1);
 				work.at(i)->parent = n;
 				work.at(i + 1)->parent = n;
 				auto list1 = work.at(i)->ylist;
 				auto list2 = work.at(i + 1)->ylist;
-				vector<point> res(list1.size() + list2.size());
+				std::vector<Point> res(list1.size() + list2.size());
 				//				merge(list1.begin(), list1.end(), list2.begin(), list2.end(), res.begin(), compare_y);
-				merge_ylist(list1, list2, n->ylist); //fractional cascading
+				MergeYList(list1, list2, n->ylist); //fractional cascading
 													 //				n->ylist = res;
 				next.push_back(n);
 			}
@@ -38,14 +38,19 @@ node* range_tree::construct(vector<point>& p_v) {
 	return work.at(0);
 }
 
-long range_tree::range(point left_point, point right_point) {
+RangeTree::~RangeTree(){
+	root->Remove();
+	delete root;
+}
+
+long RangeTree::QueryRange(Point left_point, Point right_point) {
 	point_id.clear();
 	double left = left_point.x - 0.5;
 	double right = right_point.x + 0.5;
 	double bottom = left_point.y - 0.5;
 	double top = right_point.y + 0.5;
-	node* start_left = root;
-	node* start_right = root;
+	RangeTreeNode* start_left = root;
+	RangeTreeNode* start_right = root;
 	long root_top = root->find_top(top);
 	long root_bottom = root->find_bottom(bottom);
 	long now_bottom_l = root_bottom;

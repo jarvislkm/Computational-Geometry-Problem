@@ -1,6 +1,5 @@
 #include "range_tree_node.h"
-using namespace std;
-long node::ylist_find(double top, double bottom) {
+long RangeTreeNode::ylist_find(double top, double bottom) {
 	long left = 0;
 	long right = ylist.size();
 	long count = 0;
@@ -26,7 +25,18 @@ long node::ylist_find(double top, double bottom) {
 	return count>0?count:0;
 }
 
-long node::find_top(double top) {
+void RangeTreeNode::Remove() {
+	if (lc) {
+		lc->Remove();
+		delete lc;
+	}
+	if (rc) {
+		rc->Remove();
+		delete rc;
+	}
+}
+
+long RangeTreeNode::find_top(double top) {
 	long left = 0;
 	long right = ylist.size();
 	long count = 0;
@@ -39,7 +49,7 @@ long node::find_top(double top) {
 	return right;
 }
 
-long node::find_bottom(double bottom) {
+long RangeTreeNode::find_bottom(double bottom) {
 	long left = 0;
 	long right = ylist.size();
 	do
