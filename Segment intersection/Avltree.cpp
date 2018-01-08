@@ -2,7 +2,7 @@
 void avl_tree::traverse(avl_node* root) {
 	if (root) {
 		if (root->lc) { traverse(root->lc); }
-		if (root) cout << "lh: " << root->lheight << "  rh: " << root->rheight << "  at: " << position << " is " << root->segm.at(position) << " size: " << size << endl;
+		if (root) std::cout << "lh: " << root->lheight << "  rh: " << root->rheight << "  at: " << position << " is " << root->segm.at(position) << " size: " << size << std::endl;
 		if (root->rc) { traverse(root->rc); }
 	}
 }

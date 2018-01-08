@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <algorithm>
 #include "coast_line.h"
@@ -49,7 +50,7 @@ bool in_box(double x, double y) {
 	return vx_min <= x && x <= vx_max && vy_min <= y && y <= vy_max;
 }
 
-void traverse(coast_node* work, double po, vector<vertex* >& vertex_vec) {
+void traverse(coast_node* work, double po, std::vector<vertex* >& vertex_vec) {
 	if (work->is_leaf()) return;
 	traverse(work->lc, po, vertex_vec);
 	double x, y, x0, y0, dx, dy;
@@ -71,33 +72,36 @@ void traverse(coast_node* work, double po, vector<vertex* >& vertex_vec) {
 	traverse(work->rc, po, vertex_vec);
 }
 
-void read(long int & number, vector<site>& site_point, long int & test_point_num, vector<point>& test_point) {
-	cin >> number;
-	long int s = 0;
+void read(int & number, std::vector<site>& site_point, int & test_point_num, std::vector<point>& test_point) {
+	ifstream in;
+	in.open("data.txt");
+	in >> number;
+	int s = 0;
 	double a, b;
 	while (s < number) {
-		cin >> a >> b;
-		a = a / 100;
-		b = b / 100;
+		in >> a >> b;
+		a = a / 10;
+		b = b / 10;
 		site to_add(a, b, s++);
 		site_point.push_back(to_add);
 	}
+	in.close();
 }
 
 int main() {
-	long int number;
-	long int test_point_number;
-	vector<point> test_point;
-	vector<half_edge*> edge_vec;
-	vector<vertex* > vertex_vec;
-	vector<site> site_point;
-	vector<face*> face_vec;
+	int number;
+	int test_point_number;
+	std::vector<point> test_point;
+	std::vector<half_edge*> edge_vec;
+	std::vector<vertex* > vertex_vec;
+	std::vector<site> site_point;
+	std::vector<face*> face_vec;
 	read(number, site_point, test_point_number, test_point);
 	sort(site_point.begin(), site_point.end(), sort_site);
 
 	coast_node* start_node = new coast_node(site_point[0]);
 	coast_line cl(start_node);
-	long int site_event_now = 1;
+	int site_event_now = 1;
 	eventqueue circle_event_queue;
 
 	face* face_to_add = new face(0);
@@ -164,9 +168,9 @@ int main() {
 		}
 	}
 
-	cl.position -= 4000;
+	cl.position -= 40000;
 	coast_node* work = cl.root;
-	vector<vertex* > out_vertex;
+	std::vector<vertex* > out_vertex;
 	traverse(work, cl.position, out_vertex);  // This is to set all out vertex
 
 	for (auto f : face_vec) {
@@ -183,20 +187,25 @@ int main() {
 			count++;
 		} while (start && start != record);
 	}
+
+	ofstream out;
+	out.open("result.txt");
 	long long int sum = 0;
 	for (long int i = 0; i < edge_vec.size(); i += 2) {
 		long int id_a = edge_vec.at(i)->inc_face->id;
 		long int id_b = edge_vec.at(i)->twin->inc_face->id;
-		long int real_a = site_point.at(id_a).id+1;
-		long int real_b = site_point.at(id_b).id+1;
+		long int real_a = site_point.at(id_a).id + 1;
+		out << site_point.at(id_a).p.x << " " << site_point.at(id_a).p.y << endl;
+		long int real_b = site_point.at(id_b).id + 1;
+		out << site_point.at(id_b).p.x << " " << site_point.at(id_b).p.y << endl;
 		sum += real_a;
 		sum += real_b;
 	}
 	long long int result_f = edge_vec.size() / 2 + 1;
 	long long int result = sum%result_f;
-    printf("%ld\r\n", result);
-//		out << site_point[test_face->id].id << endl;
-//		out << q.x << " " << q.y << endl;
-//		out << site_point.at(test_face->id).p.x << " " << site_point.at(test_face->id).p.y << endl;
+	cout << result;
+
+	while (1) { int s; }
+	out.close();
 	return 0;
 }

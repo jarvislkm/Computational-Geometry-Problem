@@ -1,9 +1,10 @@
 #include "range_tree.h"
 #include "func.h"
 #include <algorithm>
-node* range_tree::construct(vector<point>& p_v) {
-	vector<node*> work;
-	vector<node*> next;
+
+node* range_tree::construct(std::vector<point>& p_v) {
+	std::vector<node*> work;
+	std::vector<node*> next;
 	for (auto p : p_v) {
 		node* n = new node(p);
 		n->ylist.push_back(p);
@@ -23,9 +24,9 @@ node* range_tree::construct(vector<point>& p_v) {
 				work.at(i + 1)->parent = n;
 				auto list1 = work.at(i)->ylist;
 				auto list2 = work.at(i + 1)->ylist;
-				vector<point> res(list1.size() + list2.size());
+				std::vector<point> res(list1.size() + list2.size());
 //				merge(list1.begin(), list1.end(), list2.begin(), list2.end(), res.begin(), compare_y);
-				merge_ylist(list1, list2, n->ylist);
+				range_tree_project::merge_ylist(list1, list2, n->ylist);
 //				n->ylist = res;
 				next.push_back(n);
 			}

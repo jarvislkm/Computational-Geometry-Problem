@@ -2,7 +2,6 @@
 #include "Header.h"
 #include "func.h"
 #include <iostream>
-using namespace std;
 
 class point {
 public:
@@ -21,9 +20,9 @@ public:
 	}
 	double x;
 	double y;
-	friend ostream& operator<<(ostream& os, point &a) {
+	friend std::ostream& operator<<(std::ostream& os, point &a) {
 		//		os << " x: " << a.x << " y: " << a.y << endl;
-		os << a.x << "  " << a.y << endl;
+		os << a.x << "  " << a.y << std::endl;
 		return os;
 	}
 };

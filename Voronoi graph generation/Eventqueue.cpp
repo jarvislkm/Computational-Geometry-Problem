@@ -4,7 +4,7 @@ int eventqueue::percolate_Up(int rank) {
 	while (rank != 0) {
 		int rankp = eventquene_par(rank);
 		if (*queue.at(rank) < *(queue.at(rankp))) break;
-		swap(queue.at(rank), queue.at(rankp));
+		std::swap(queue.at(rank), queue.at(rankp));
 		rank = rankp;
 	}
 	return rank;
@@ -14,7 +14,7 @@ int eventqueue::precolate_Down(int rank) {
 	int size = queue.size();
 	int large = 0;
 	while (rank != (large = largeof3(queue, rank, size))) {
-		swap(queue.at(rank), queue.at(large));
+		std::swap(queue.at(rank), queue.at(large));
 		rank = large;
 	}
 	return rank;

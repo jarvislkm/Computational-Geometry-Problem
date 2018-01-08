@@ -1,7 +1,6 @@
 #pragma once
 #include <iostream>
 #include <vector>
-using namespace std;
 enum type_of_point{ start, ending, regular_left, regular_right, split, merging};
 class point {
 public:
@@ -17,10 +16,10 @@ public:
 	type_of_point type;
 	point* before;
 	point* after;
-	vector<int> connected;
-	friend ostream& operator<<(ostream& os, point &a) {
+	std::vector<int> connected;
+	friend std::ostream& operator<<(std::ostream& os, point &a) {
 		//		os << " x: " << a.x << " y: " << a.y << endl;
-		os<<"num:  " <<a.num<<"  "<< a.x << "  " << a.y << endl;
+		os<<"num:  " <<a.num<<"  "<< a.x << "  " << a.y << std::endl;
 		return os;
 	}
 };

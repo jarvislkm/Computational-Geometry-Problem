@@ -2,11 +2,10 @@
 #include "Event_circle.h"
 #include "Header.h"
 #include <vector>
-using namespace std;
 
 class eventqueue {
 public:
-	vector<Event_circle*> queue;
+	std::vector<Event_circle*> queue;
 	int percolate_Up(int rank);
 	int precolate_Down(int rank);
 	Event_circle* getMax() { if (queue.size() > 0) return queue[0]; else return NULL; }

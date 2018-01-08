@@ -4,6 +4,7 @@ struct result {
 	bool find;
 	avl_node*& node;
 };
+
 class avl_tree {
 public:
 	avl_tree(avl_node *_root) : root(_root) { size = 1; hot = NULL; };

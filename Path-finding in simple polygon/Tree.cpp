@@ -1,4 +1,5 @@
 #include "Tree.h"
+using namespace std;
 int max(int a, int b) { return (a > b ? a : b); }
 
 void swap_seg(avl_node &a, avl_node &b) {

@@ -2,7 +2,6 @@
 #include "point.h"
 #include <iostream>
 #include <vector>
-using namespace std;
 class range_tree;
 class node {
 public:
@@ -17,5 +16,5 @@ public:
 	node* lc;
 	node* rc;
 	node* parent;
-	vector<point> ylist;
+	std::vector<point> ylist;
 };

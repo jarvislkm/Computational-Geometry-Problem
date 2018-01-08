@@ -3,7 +3,7 @@
 #include <vector>
 class eventqueue {
 public:
-	vector<event*> queue;
+	std::vector<event*> queue;
 	int percolate_Up(int rank);
 	int precolate_Down(int rank);
 	event* getMax() { if (queue.size() > 0)return queue[0]; else return NULL; }

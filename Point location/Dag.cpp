@@ -20,7 +20,7 @@ node* Dag::find(point p) {
 	return work;
 }
 
-void Dag::handle_intersection(vector<node_t*>& intersection, segment* insert) {
+void Dag::handle_intersection(std::vector<node_t*>& intersection, segment* insert) {
 	node_t* begin = intersection.at(0);
 	node_t* U = NULL;
 	node_t* L = NULL;
@@ -52,79 +52,81 @@ void Dag::handle_intersection(vector<node_t*>& intersection, segment* insert) {
 	U->left_up_neighbor = front;
 	L->left_low_neighbor = front;	
 
-	// for (long int i = 1; i < intersection.size(); i++) {
-		// node_t* work = intersection.at(i);
-		// node_t* pre = intersection.at(i-1);
-		// node_t* new_node = NULL;
-		// node_y* y = new node_y(insert);
 
-		// if (pre->right_up_neighbor == work) {
-			// y->lc = U;
-			// U->parent.push_back(y);
-			// U->t.right = small(work->t.right, insert->rp);  //extend common area;
-			// new_node = new node_t(*work);
-			// new_node->t.upper = insert;
 
-			// new_node->left_up_neighbor = L;
-			// L->right_up_neighbor = new_node;
-			// L->right_low_neighbor = pre->right_low_neighbor;
-			// if (pre->right_low_neighbor) pre->right_low_neighbor->left_low_neighbor = L;
-			// if (work->left_low_neighbor) work->left_low_neighbor->right_low_neighbor = new_node;
+	for (long int i = 1; i < intersection.size(); i++) {
+		node_t* work = intersection.at(i);
+		node_t* pre = intersection.at(i-1);
+		node_t* new_node = NULL;
+		node_y* y = new node_y(insert);
 
-			// y->rc = new_node;
-			// new_node->parent.clear();
-			// new_node->parent.push_back(y);
-			// L = new_node;
-		// }
-		// else if (pre->right_low_neighbor == work) {
-			// y->rc = L;
-			// L->parent.push_back(y);
-			// L->t.right = small(work->t.right, insert->rp);  //extend common area;
-			// new_node = new node_t(*work);
-			// new_node->t.lower = insert;
+		if (pre->right_up_neighbor == work) {
+			y->lc = U;
+			U->parent.push_back(y);
+			U->t.right = small(work->t.right, insert->rp);  //extend common area;
+			new_node = new node_t(*work);
+			new_node->t.upper = insert;
 
-			// new_node->left_low_neighbor = U;
-			// U->right_low_neighbor = new_node;
-			// U->right_up_neighbor = pre->right_up_neighbor;
-			// if (pre->right_up_neighbor) { pre->right_up_neighbor->left_up_neighbor = U; }
-			// if (work->left_up_neighbor) { work->left_up_neighbor->right_up_neighbor = new_node; }
-			// y->lc = new_node;
-			// new_node->parent.clear();
-			// new_node->parent.push_back(y);
-			// U = new_node;
-		// }
+			new_node->left_up_neighbor = L;
+			L->right_up_neighbor = new_node;
+			L->right_low_neighbor = pre->right_low_neighbor;
+			if (pre->right_low_neighbor) pre->right_low_neighbor->left_low_neighbor = L;
+			if (work->left_low_neighbor) work->left_low_neighbor->right_low_neighbor = new_node;
 
-		// if (i != intersection.size() - 1) {
-			// y->parent = work->parent;
-			// for (node* p : work->parent) {
-				// (dynamic_cast<node_t*>(p->lc) == work ? p->lc : p->rc) = y;
-			// }
-		// }
-		// else {
-			// new_node->t.right = insert->rp;
-			// node_x* x = new node_x(insert->rp);
-			// x->id = insert->id;
+			y->rc = new_node;
+			new_node->parent.clear();
+			new_node->parent.push_back(y);
+			L = new_node;
+		}
+		else if (pre->right_low_neighbor == work) {
+			y->rc = L;
+			L->parent.push_back(y);
+			L->t.right = small(work->t.right, insert->rp);  //extend common area;
+			new_node = new node_t(*work);
+			new_node->t.lower = insert;
 
-			// x->parent = work->parent;
-			// for (node* p : work->parent) {
-				// (dynamic_cast<node_t*>(p->lc) == work ? p->lc : p->rc) = x;
-			// }
-			// x->lc = y; y->parent.push_back(x);
-			// node_t* back = new node_t(insert->rp, work->t.right, work->t.upper, work->t.lower);
-			// back->parent.push_back(x); x->rc = back;
+			new_node->left_low_neighbor = U;
+			U->right_low_neighbor = new_node;
+			U->right_up_neighbor = pre->right_up_neighbor;
+			if (pre->right_up_neighbor) { pre->right_up_neighbor->left_up_neighbor = U; }
+			if (work->left_up_neighbor) { work->left_up_neighbor->right_up_neighbor = new_node; }
+			y->lc = new_node;
+			new_node->parent.clear();
+			new_node->parent.push_back(y);
+			U = new_node;
+		}
 
-			// back->left_up_neighbor = U; U->right_up_neighbor = back;
-			// back->left_low_neighbor = L; L->right_low_neighbor = back;
+		if (i != intersection.size() - 1) {
+			y->parent = work->parent;
+			for (node* p : work->parent) {
+				(dynamic_cast<node_t*>(p->lc) == work ? p->lc : p->rc) = y;
+			}
+		}
+		else {
+			new_node->t.right = insert->rp;
+			node_x* x = new node_x(insert->rp);
+			x->id = insert->id;
 
-			// back->right_low_neighbor = work->right_low_neighbor;
-			// back->right_up_neighbor = work->right_up_neighbor;
-			// if (work->right_low_neighbor) work->right_low_neighbor->left_low_neighbor = back;
-			// if (work->right_up_neighbor) work->right_up_neighbor->left_up_neighbor = back;
-		// }
-	// }
-	// for (auto n : intersection) {
-		// delete n;
-	// }
+			x->parent = work->parent;
+			for (node* p : work->parent) {
+				(dynamic_cast<node_t*>(p->lc) == work ? p->lc : p->rc) = x;
+			}
+			x->lc = y; y->parent.push_back(x);
+			node_t* back = new node_t(insert->rp, work->t.right, work->t.upper, work->t.lower);
+			back->parent.push_back(x); x->rc = back;
+
+			back->left_up_neighbor = U; U->right_up_neighbor = back;
+			back->left_low_neighbor = L; L->right_low_neighbor = back;
+
+			back->right_low_neighbor = work->right_low_neighbor;
+			back->right_up_neighbor = work->right_up_neighbor;
+			if (work->right_low_neighbor) work->right_low_neighbor->left_low_neighbor = back;
+			if (work->right_up_neighbor) work->right_up_neighbor->left_up_neighbor = back;
+		}
+	}
+	for (auto n : intersection) {
+		delete n;
+	}
 }
 
 void Dag::insert(segment* s) {
@@ -187,7 +189,7 @@ void Dag::insert(segment* s) {
 		return;
 	}  // two endpoint in same trap;
 	else {
-		vector<node_t*> intersection;
+		std::vector<node_t*> intersection;
 		while (trap!=trap_end) {
 			intersection.push_back(start_t);
 			node_t* next = NULL;

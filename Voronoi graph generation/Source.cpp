@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <algorithm>
 #include "coast_line.h"
@@ -49,7 +50,7 @@ bool in_box(double x, double y) {
 	return vx_min <= x && x <= vx_max && vy_min <= y && y <= vy_max;
 }
 
-void traverse(coast_node* work, double po, vector<vertex* >& vertex_vec) {
+void traverse(coast_node* work, double po, std::vector<vertex* >& vertex_vec) {
 	if (work->is_leaf()) return;
 	traverse(work->lc, po, vertex_vec);
 	double x, y, x0, y0, dx, dy;
@@ -71,21 +72,23 @@ void traverse(coast_node* work, double po, vector<vertex* >& vertex_vec) {
 	traverse(work->rc, po, vertex_vec);
 }
 
-void read(long int & number, vector<site>& site_point, long int & test_point_num, vector<point>& test_point) {
-	cin >> number;
-	long int s = 0;
+void read(int & number, std::vector<site>& site_point, int & test_point_num, std::vector<point>& test_point) {
+	ifstream in;
+	in.open("data.txt");
+	in >> number;
+	int s = 0;
 	double a, b;
 	while (s < number) {
-		cin >> a >> b;
+		in >> a >> b;
 		a = a / 10;
 		b = b / 10;
 		site to_add(a, b, s++);
 		site_point.push_back(to_add);
 	}
-	cin >> test_point_num;
+	in >> test_point_num;
 	s = 0;
 	while (s<test_point_num) {
-		cin >> a >> b;
+		in >> a >> b;
 		a = a / 10;
 		b = b / 10;
 		s++;
@@ -95,19 +98,19 @@ void read(long int & number, vector<site>& site_point, long int & test_point_num
 }
 
 int main() {
-	long int number;
-	long int test_point_number;
-	vector<point> test_point;
-	vector<half_edge*> edge_vec;
-	vector<vertex* > vertex_vec;
-	vector<site> site_point;
-	vector<face*> face_vec;
+	int number;
+	int test_point_number;
+	std::vector<point> test_point;
+	std::vector<half_edge*> edge_vec;
+	std::vector<vertex* > vertex_vec;
+	std::vector<site> site_point;
+	std::vector<face*> face_vec;
 	read(number, site_point, test_point_number, test_point);
 	sort(site_point.begin(), site_point.end(), sort_site);
 
 	coast_node* start_node = new coast_node(site_point[0]);
 	coast_line cl(start_node);
-	long int site_event_now = 1;
+	int site_event_now = 1;
 	eventqueue circle_event_queue;
 
 	face* face_to_add = new face(0);
@@ -176,12 +179,14 @@ int main() {
 
 	cl.position -= 4000;
 	coast_node* work = cl.root;
-	vector<vertex* > out_vertex;
+	std::vector<vertex* > out_vertex;
 	traverse(work, cl.position, out_vertex);  // This is to set all out vertex
 
+	ofstream out;
+	out.open("result.txt"); // This is to cout the result file for matlab;
 	for (auto f : face_vec) {
 		half_edge* start = f->inc_edge;
-		long int count = 0;
+		int count = 0;
 		while (start->pre && start->pre != f->inc_edge) {
 			start = start->pre;
 		}
@@ -189,12 +194,16 @@ int main() {
 		do
 		{
 			start->inc_face = f;
+			out << start->ori->x << " " << start->ori->y << endl;
+			out << start->twin->ori->x << " " << start->twin->ori->y << endl;
 			start = start->succ;
 			count++;
 		} while (start && start != record);
 	}
+	out.close();
 
-	long int count = 1;
+	out.open("result_test.txt");
+	int count = 1;
 	for (auto q : test_point) { // This is to calculate the point in each hall; step by step method find the neighbor is closest to target. 
 		face* test_face = face_vec.at(face_vec.size() / 2); //start from the center point
 		bool stop = true;
@@ -220,15 +229,26 @@ int main() {
 					start = start->succ;
 				} while (start && start != record);
 				test_face = next;
+				cout << "id: " << id_r << endl;
 			  }
 			  else {
+//						int num = test_face->id;
 						stop = false;
+						//do
+						//{
+						//	if (in_face(q, start->twin->inc_face)) {
+						//		if (start->twin->inc_face->id < num) { test_face = start->twin->inc_face; }
+						//	}
+						//	start = start->succ;
+						//} while (start && start != record);
 					}
 		  }
-    	  printf("%ld\r\n", site_point[test_face->id].id);
 //		out << site_point[test_face->id].id << endl;
-//		out << q.x << " " << q.y << endl;
-//		out << site_point.at(test_face->id).p.x << " " << site_point.at(test_face->id).p.y << endl;
+		out << q.x << " " << q.y << endl;
+		out << site_point.at(test_face->id).p.x << " " << site_point.at(test_face->id).p.y << endl;
 	}
+	cout << "ending...";
+	while (1) { int s; }
+	out.close();
 	return 0;
 }

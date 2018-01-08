@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <algorithm>
 #include <iterator>
@@ -6,182 +7,22 @@
 #include "Segment.h"
 #include "Node.h"
 #include "Tree.h"
+#include "Func.h"
 using namespace std;
-point start_point;
-point end_point;
 
-struct edge {
-	edge(int aa, int bb) {
-		if (aa > bb) { a = aa; b = bb; }
-		else { a = bb; b = aa; }
-	}
-	int a;
-	int b;
-	int distance;
-};
-vector<edge> mono_edge;
-struct circle_node {
-	int num;
-	bool enable;
-	vector<int> relation;
-};
-struct triangle {
-	triangle(int aa,int bb,int cc):a(aa),b(bb),c(cc){};
-	int a;
-	int b;
-	int c;
-	triangle* par = NULL;
-	triangle* lc = NULL;
-	triangle* rc = NULL;
-	int position;
-};
-vector<triangle*> dual_tree;
-
-bool compare(edge x, edge y) {
-	return x.distance < y.distance;
-}
-bool compare_by_y(point* a, point* b) {
-	return a->y == b->y ? a->x < b->x : a->y > b->y;
-}
-bool compare_by_num(point* a, point* b) {
-	return a->num<b->num;
-}
-
-double to_left(point a, point b, point c) {
-	double tem1 = a.x*b.y + b.x*c.y + c.x*a.y - b.y*c.x - c.y*a.x - a.y*b.x;
-	return tem1;
-}
-
-bool start_point_in_triangle(int count, vector<point*>& mo_point) {
-	point* a = mo_point.at(dual_tree.at(count)->a);
-	point* b = mo_point.at(dual_tree.at(count)->b);
-	point* c = mo_point.at(dual_tree.at(count)->c);
-	if (to_left(*a, *b, *c) < 0) {
-		c = mo_point.at(dual_tree.at(count)->b);
-		b = mo_point.at(dual_tree.at(count)->c);
-	}
-	if (to_left(*a, *b, start_point) >= 0 && to_left(*b, *c, start_point) >= 0 && to_left(*c, *a, start_point) >= 0) return true;
-	else return false;
-}
-
-bool end_point_in_triangle(int count, vector<point*>& mo_point) {
-	point* a = mo_point.at(dual_tree.at(count)->a);
-	point* b = mo_point.at(dual_tree.at(count)->b);
-	point* c = mo_point.at(dual_tree.at(count)->c);
-	if (to_left(*a, *b, *c) < 0) {
-		c = mo_point.at(dual_tree.at(count)->b);
-		b = mo_point.at(dual_tree.at(count)->c);
-	}
-	if (to_left(*a, *b, end_point) >= 0 && to_left(*b, *c, end_point) >= 0 && to_left(*c, *a, end_point) >= 0) return true;
-	else return false;
-}
-
-edge find_edge(triangle* a, triangle* b) {
-	if (a->a == b->a || a->a == b->b || a->a == b->c) {}
-	else return edge{ a->b,a->c };
-	if (a->b == b->a || a->b == b->b || a->b == b->c) { return edge{ a->b,a->a }; }
-	else return edge{ a->a,a->c };
-}
-
-int find_commom_point_in_edge(edge& a, edge& b) {
-	if (a.a == b.a || a.a == b.b) return a.a;
-	else return a.b;
-}
-
-void handle_monotone(vector<int>number, vector<point*>& mo_point) {
-	auto max = number.begin();
-	auto min = number.begin();
-	for (auto s = number.begin(); s < number.end();s++) {
-		if (*mo_point.at(*s) > *mo_point.at(*max)) max = s;
-		if (*mo_point.at(*s) < *mo_point.at(*min)) min = s;
-	}
-	auto right = max;
-	auto left = max;
-	if (max+1 == number.end()) {
-		left = number.begin();
-		right = max - 1;
-	}
-	else if (max == number.begin()) {
-		right = number.end() - 1;
-		left = max + 1;
-	}
-	else {
-		right = max - 1;
-		left = max + 1;
-	}
-	vector<int> stack;
-	stack.push_back(*max);
-	int stack_status = 0;
-	int point_status = 0;
-	while (right != min || left != min) {
-		auto to_add = max;
-		if (*mo_point.at(*right) > *mo_point.at(*left)) {
-			to_add = right; 
-			point_status = 1;
-			if (right == number.begin()) { right = number.end() - 1; } 
-			else right = right - 1; 
-		}
-		else {
-			to_add = left;
-			point_status = -1;
-			if (left == number.end() - 1) { left = number.begin(); }
-			else left = left + 1;
-		}
-		if (stack.size() <= 1) {
-			stack_status = point_status; 
-			stack.push_back(*to_add);
-			continue;
-		}
-		if (stack_status == point_status) {
-			while (stack.size() > 1) {
-				auto stack_end = stack.end() - 1;
-				auto stack_end_2 = stack.end() - 2;
-				if (stack_status*to_left(*mo_point.at(*to_add), *mo_point.at(*stack_end), *mo_point.at(*stack_end_2)) <= 0) { break; }
-				else {
-					stack.pop_back();  
-					edge to_add_mono(*to_add, *stack_end_2);
-					mono_edge.push_back(to_add_mono); 
-				}
-			}
-			stack.push_back(*to_add);
-		}
-		else {
-			int back = *(stack.end() - 1);
-			for (auto s = stack.begin() + 1; s < stack.end(); s++) {
-				edge to_add_mono(*to_add,*s);
-				mono_edge.push_back(to_add_mono);
-			}
-			stack.clear();
-			stack.push_back(back);
-			stack.push_back(*to_add);
-			stack_status = point_status;
-		}
-	}
-	if (stack.size() > 2) {
-		for (int i = 1; i < stack.size()-1; i++) {
-			edge to_add_mono(*left, stack.at(i));
-			mono_edge.push_back(to_add_mono);
-		}
-	}
-}
-
-void traverse(triangle* root) {
-	if(root->lc) traverse(root->lc);
-	cout << root->a << " " << root->b << " " << root->c << endl;
-	if (root->rc) traverse(root->rc);
-}
-
-int read(vector<point*>&p) {
+int read(std::vector<point*>&p, point& start_point, point& end_point) {
+	ifstream in;
+	in.open("data1.txt");
 	int size;
 	point* point_to_add;
-	cin >> start_point.x >> start_point.y;
-	cin >> end_point.x >> end_point.y;
+	in >> start_point.x >> start_point.y;
+	in >> end_point.x >> end_point.y;
 	int count = 0;
 	int x;
 	int y;
-	cin >> size;
+	in >> size;
 	while (count <size) {
-		cin >>x >>y;
+		in >>x >>y;
 		point_to_add = new point(x,y,count);
 		p.push_back(point_to_add);
 		count++;
@@ -189,35 +30,21 @@ int read(vector<point*>&p) {
 	return size;
 }
 
-int find_common(vector<int> &a,vector<int>&b, int not_this) {
-	int i = 0;
-	int j = 0;
-	while (a.at(i) != b.at(j) || a.at(i)==not_this) {
-		if (a.at(i) < b.at(j)) i++;
-		else j++;
-	}
-	return a.at(i);
-}
-
-void add_node(int a,int b, vector<circle_node>& table, triangle* &parent, bool is_lc, int not_this) {
-	int next = find_common(table.at(a).relation, table.at(b).relation,not_this);
-	triangle* to_add = new triangle(a, b, next);
-	to_add->par = parent;
-	(is_lc ? parent->lc : parent->rc) = to_add;
-	dual_tree.push_back(to_add);
-	if (a != (next + 1+ table.size()) % table.size() && a != (next - 1+ table.size()) % table.size())add_node(a, next, table, to_add, 0,b);
-	if (b != (next + 1+ table.size()) % table.size() && b != (next - 1+ table.size()) % table.size())add_node(b, next, table, to_add, 1,a);
-	return;
-}
-
 int main() {
-	vector<point*> pointqueue;
-	vector<edge> inter_edge;
-	int size = read(pointqueue);
+	point start_point;
+	point end_point;
+	std::vector<edge> mono_edge;
+	std::vector<triangle*> dual_tree;
+	std::vector<point*> pointqueue;
+	std::vector<edge> inter_edge;
+
+	int size = read(pointqueue, start_point, end_point);
+
 	pointqueue.at(0)->after = pointqueue.at(1);
 	pointqueue.at(0)->before = pointqueue.at(size-1);
 	pointqueue.at(size - 1)->after = pointqueue.at(0);
 	pointqueue.at(size - 1)->before = pointqueue.at(size - 2);
+
 	for (int i = 1; i < size - 1;i++) {
 			pointqueue.at(i)->after = pointqueue.at(i+1);
 			pointqueue.at(i)->before = pointqueue.at(i - 1);
@@ -299,13 +126,13 @@ int main() {
 		p.distance = min(p.a - p.b, p.b + size - p.a);
 	}
 	sort(inter_edge.begin(), inter_edge.end(), compare);
-	vector<circle_node> circle;
+	std::vector<circle_node> circle;
 	for (int i = 0; i < size; i++) {
 		circle.push_back({ i,true });
 	}
 	
 	sort(pointqueue.begin(), pointqueue.end(), compare_by_num);
-	vector<int> point_in_monotone;
+	std::vector<int> point_in_monotone;
 	for (auto& p : inter_edge) {
 		point_in_monotone.push_back(p.b);
 		if (p.a - p.b == p.distance) {
@@ -327,13 +154,13 @@ int main() {
 			reverse(point_in_monotone.begin(), point_in_monotone.end());
 		}
 		point_in_monotone.push_back(p.a);
-		handle_monotone(point_in_monotone, pointqueue);
+		handle_monotone(point_in_monotone, pointqueue, mono_edge);
 		point_in_monotone.clear();
 	}
 	for (auto s : circle) {
 		if (s.enable) point_in_monotone.push_back(s.num);
 	}
-	handle_monotone(point_in_monotone, pointqueue);
+	handle_monotone(point_in_monotone, pointqueue, mono_edge);
 	// start to generate dual tree
 	mono_edge.insert(mono_edge.end(), inter_edge.begin(), inter_edge.end());
 	for (auto one_edge : mono_edge) {
@@ -357,7 +184,7 @@ int main() {
 	}
 	triangle* root = new triangle(start_at, circle.at(start_at).relation.at(0), circle.at(start_at).relation.at(1));
 	dual_tree.push_back(root); //find the starting triangle and start to explore others
-	add_node(circle.at(start_at).relation.at(0), circle.at(start_at).relation.at(1), circle, root, 0, start_at);
+	add_node(circle.at(start_at).relation.at(0), circle.at(start_at).relation.at(1), circle, root, 0, start_at, dual_tree);
 	// sort each node for later comparasion
 	for (int i = 0; i < dual_tree.size();i++) {
 		dual_tree.at(i)->position = i;
@@ -365,12 +192,12 @@ int main() {
 	//end building dual tree
 	//find triangle of start and end point
 	int count = 0;
-	while (!start_point_in_triangle(count, pointqueue)) { count++; };
+	while (!start_point_in_triangle(count, pointqueue,dual_tree, start_point)) { count++; };
 	triangle* start = dual_tree.at(count);
 	count = 0;
-	while (!end_point_in_triangle(count, pointqueue)) { count++; };
+	while (!end_point_in_triangle(count, pointqueue, dual_tree, end_point)) { count++; };
 	triangle* end = dual_tree.at(count);
-	vector<int> start_sequence,end_sequence;
+	std::vector<int> start_sequence,end_sequence;
 	while (start) {
 		start_sequence.push_back(start->position);
 		start = start->par;
@@ -393,8 +220,8 @@ int main() {
 	}
 
 	//start finding the proper cusp. method from network paper;
-	vector<int> cusp_record;
-	vector<int> cusp_status;
+	std::vector<int> cusp_record;
+	std::vector<int> cusp_status;
 	point* cusp_point = &start_point;
 	point* tend_point = &end_point;
 	pointqueue.push_back(tend_point);
@@ -414,12 +241,6 @@ int main() {
 				d = find_edge(dual_tree.at(start_sequence.at(i)), dual_tree.at(start_sequence.at(i + 1)));
 			}
 			else { d.a = record.a; d.b = int(pointqueue.size() - 2); }
-
-//			if (i == start_sequence.size() - 1 && added_edge_same_side) {
-//				cusp_status.pop_back();
-//				cusp_status.push_back(pointqueue.size() - 2);
-//				break;
-//			}
 
 			int common_point_in_edge = find_commom_point_in_edge(d, record);
 			record = d;
@@ -447,11 +268,6 @@ int main() {
 				bool on_left_line_right = true;
 				int left_line_count = cusp_status.size() - 1;
 				bool below_bottom_line;
-				//if (added_edge_same_side == true && common_point_in_edge != cusp_status.at(cusp_status.size() - 1)) {
-				//	below_bottom_line = (adjust*to_left(*pointqueue.at(cusp_status.at(0)), *pointqueue.at(cusp_status.at(cusp_status.size() - 2)), *pointqueue.at(new_point)) >= 0);
-				//}
-				//else below_bottom_line = (adjust*to_left(*pointqueue.at(cusp_status.at(0)), *pointqueue.at(cusp_status.at(cusp_status.size() - 1)), *pointqueue.at(new_point)) >=0);
-				// Three category, right of the left line; left of the left line and below the bottom line; higher than bottom line.
 				while (adjust*to_left(*pointqueue.at(cusp_status.at(left_line_count)), *pointqueue.at(cusp_status.at(left_line_count - 1)), *pointqueue.at(new_point)) >= 0) {
 					left_line_count--;
 					if (*pointqueue.at(cusp_status.at(left_line_count)) == *cusp_point) { on_left_line_right = false; break; }
@@ -472,17 +288,6 @@ int main() {
 					cusp_status.insert(cusp_status.begin(), new_point);
 					added_edge_same_side = false;
 				}
-				//else if (below_bottom_line) {
-				//	if (cusp_status.at(cusp_status.size() - 1) == common_point_in_edge || cusp_status.at(0) == common_point_in_edge) {
-				//		cusp_status.push_back(new_point);
-				//		added_edge_same_side = true;
-				//	}
-				//	else {
-				//		cusp_status.pop_back();
-				//		cusp_status.push_back(new_point);
-				//		added_edge_same_side = true;
-				//	}
-				//}
 				else {
 					int count_cusp = 0;
 					while (!(*pointqueue.at(cusp_status.at(count_cusp)) == *cusp_point)) { count_cusp++; }
@@ -491,10 +296,6 @@ int main() {
 						cusp_record.push_back(cusp_status.at(s));
 					}
 					cusp_status.erase(cusp_status.begin(), cusp_status.end() - 1);
-
-	//				reverse(cusp_status.begin(), cusp_status.end());
-	//				cusp_point = pointqueue.at(cusp_status.at(0));
-	//				cusp_record.push_back(cusp_status.at(0));
 					cusp_status.insert(cusp_status.begin(), new_point);
 					added_edge_same_side = true;
 				}
@@ -503,7 +304,7 @@ int main() {
 		auto cusp_to_add = cusp_status.begin();
 		if (added_edge_same_side) cusp_record.push_back(cusp_status.at(1));
 		else {
-			vector<int> latter_part;
+			std::vector<int> latter_part;
 			while (pointqueue.at(*++cusp_to_add) != cusp_point) { latter_part.push_back(*cusp_to_add); }
 			reverse(latter_part.begin(), latter_part.end());
 			cusp_record.insert(cusp_record.end(), latter_part.begin(), latter_part.end());
@@ -511,14 +312,18 @@ int main() {
 	}
 	cusp_record.erase(unique(cusp_record.begin(), cusp_record.end()),cusp_record.end());
 	
-	cout << "s" << endl;
+	ofstream out;
+	out.open("result.txt");
+	out << "s" << endl;
 	for (auto p : cusp_record) {
-		cout << p<<endl;
+		out << p<<endl;
 	}
-	cout << "e" << endl;
+	out << "e" << endl;
+	out.close();
 
 	pointqueue.pop_back();
 	pointqueue.pop_back();
+
 	for (auto s : pointqueue) {
 		delete s;
 	}

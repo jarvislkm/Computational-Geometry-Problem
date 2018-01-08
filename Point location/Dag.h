@@ -9,6 +9,6 @@ public:
 	node* root;
 	node* find(point p);
 	void insert(segment* s);
-	void handle_intersection(vector<node_t*>& intersection, segment* insert);
+	void handle_intersection(std::vector<node_t*>& intersection, segment* insert);
 };
 

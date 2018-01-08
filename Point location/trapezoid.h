@@ -3,7 +3,6 @@
 #include "func.h"
 #include "segment.h"
 #include <vector>
-using namespace std;
 class trapezoid {
 public:
 	trapezoid(point l, point r, segment* up, segment* low) {left = l; right = r; upper = up; lower = low;};

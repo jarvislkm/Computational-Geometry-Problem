@@ -3,7 +3,6 @@
 #include "segment.h"
 #include "trapezoid.h"
 #include <iostream>
-using namespace std;
 class node{
 public:
 	node() { lc = NULL; rc = NULL; };
@@ -14,5 +13,5 @@ public:
 	virtual bool is_terminal() = 0;
 	node* lc;
 	node* rc;
-	vector<node*> parent;
+	std::vector<node*> parent;
 };

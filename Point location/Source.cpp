@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include "point.h"
 #include "segment.h"
@@ -7,14 +8,16 @@
 #include "Dag.h"
 using namespace std;
 const long int bound = 2000000;
-void read(long int& number, vector<segment*>&seg_vec, long int& test_num, vector<point*>& point_vec) {
+void read(long int& number, std::vector<segment*>&seg_vec, long int& test_num, std::vector<point*>& point_vec) {
+	ifstream in;
+	in.open("data.txt");
 	long int x1,x2;
 	double y1,y2;
-	cin >> number;
-	cin >> test_num;
+	in >> number;
+	in >> test_num;
 	long int count = 0;
 	while (count<number) {
-		cin >> x1 >> y1 >> x2 >> y2;
+		in >> x1 >> y1 >> x2 >> y2;
 		point a(x1, y1);
 		point b(x2, y2);
 		if (b < a) { swap(a, b); }
@@ -24,10 +27,11 @@ void read(long int& number, vector<segment*>&seg_vec, long int& test_num, vector
 
 	count = 0;
 	while (count++<test_num){
-		cin >> x1 >> y1;
+		in >> x1 >> y1;
 		point*p = new point(x1, y1);
 		point_vec.push_back(p);
 	}
+	in.close();
 	return;
 }
 
@@ -70,8 +74,8 @@ long int find_point(point p, Dag& dag) {
 int main() {
 	long int number;
 	long int test_num;
-	vector<point*> point_vec;
-	vector<segment*> seg_vec;
+	std::vector<point*> point_vec;
+	std::vector<segment*> seg_vec;
 	read(number, seg_vec, test_num, point_vec);
 	point p1(-bound, bound);
 	point p2(bound, bound);
@@ -86,10 +90,13 @@ int main() {
 		dag.insert(s);
 	}
 
-	// for (auto p : point_vec) {
-		// long int result = find_point(*p, dag);
-		// if (result>0) cout << result << endl;
-		// else cout << "N" << endl;
-	// }
+	ofstream out;
+	out.open("result.txt");
+	for (auto p : point_vec) {
+		long int result = find_point(*p, dag);
+		if (result>0) out << result << endl;
+		else out << "N" << endl;
+	}
+	out.close();
 	return 0;
 }

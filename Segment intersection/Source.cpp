@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <iterator>
+
 #include "Header.h"
 #include "Point.h"
 #include "Segment.h"
@@ -18,11 +19,11 @@ point tem_cal;
 point tem_cal2;
 class event_intersection_list {
 public:
-	vector<segment> segment_list;
+	std::vector<segment> segment_list;
 	point intersection_point;
 };
 
-double read(int & S, int &R, int &L, int &C, eventqueue &eq, vector<segment*> &left) {
+double read(int & S, int &R, int &L, int &C, eventqueue &eq, std::vector<segment*> &left) {
 	ifstream in;
 	in.open("data.txt");
 	in >> S >> R >> L >> C;
@@ -31,8 +32,8 @@ double read(int & S, int &R, int &L, int &C, eventqueue &eq, vector<segment*> &l
 	double xholdmin = 0;
 	double xholdmax = 0;
 	event* newevent = NULL;
-	vector<segment*> ray_tem_vec;
-	vector<segment*> line_tem_vec;
+	std::vector<segment*> ray_tem_vec;
+	std::vector<segment*> line_tem_vec;
 	segment* ray_tem;
 	segment* line_tem;
 	// read segment
@@ -184,7 +185,7 @@ double read(int & S, int &R, int &L, int &C, eventqueue &eq, vector<segment*> &l
 	return xholdmin;
 }
 
-void write(vector<point*> result) {
+void write(std::vector<point*> result) {
 	ofstream out;
 	out.open("result.txt");
 	for (auto p : result) {
@@ -196,7 +197,7 @@ void write(vector<point*> result) {
 int main()
 {
 	eventqueue eq;
-	vector<segment*> left;
+	std::vector<segment*> left;
 	avl_tree status_tree;
 	point point_now;
 	int point_count = 1;
@@ -204,7 +205,7 @@ int main()
 	int S, R, L, C;
 	status_tree.position = read(S, R, L, C, eq, left);
 
-	vector<point*> result;
+	std::vector<point*> result;
 	int event_count = 0;
 	avl_node* now = NULL;
 	event* event_to_add = NULL;
