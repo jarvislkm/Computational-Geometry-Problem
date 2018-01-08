@@ -8,5 +8,5 @@ Only share for learning, please do not copy this code for Online Judge or gradin
 * Voronoi Diagrams (Fortune's method)<br />
 * Delaunay Triangulation<br />
 * Point Location (Random increasment method)<br />
-* Range Tree for window query (with Fractional Cascading)<br />
-*(coming ...)*
+* Range Tree for point window query (with Fractional Cascading)<br />
+* Orthogonal segment window query<br />
