@@ -13,3 +13,6 @@ This repository contains my understanding and code for Computational Geometry Co
 
 ## Build:
 Build with cmake and g++. Find output file in ./build/bin
+
+## Analysis:
+Some [analysis and solution](https://jarvislkm.github.io/blog/) to the problems. 
