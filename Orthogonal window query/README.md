@@ -4,10 +4,10 @@ Given n axis-paralleled segments in 2D plane and m orthogonal rectangular window
 Method: interval and range tree.
 
 input data:  
-first line: n  
-next n line: segments position(x1,y1,x2,y2)  
-next line: m
-next m line: top-left and bottom-right corner of window (x1, y1, x2, y2)
+* first line  : n  
+* next n line : segments position(x1,y1,x2,y2)  
+* next line   : m
+* next m line : top-left and bottom-right corner of window (x1, y1, x2, y2)
 
 output data:  
-m line: number of segments in query window.
+* m line: number of segments in query window.
