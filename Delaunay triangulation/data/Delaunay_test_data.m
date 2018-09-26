@@ -6,7 +6,7 @@ max = 1e6;
 
 x = randi([min,max],sitenum,1)';
 y = randi([min,max],sitenum,1)';
-fileID = fopen("C:\Users\Kaiming's Jam\source\repos\Delaunay_triangle\Delaunay_triangle\data.txt",'w');
+fileID = fopen("data.txt",'w');
 fprintf(fileID,'%i\r\n',sitenum);
 A = [x;y];
 fprintf(fileID,'%i %i\r\n',A);
@@ -20,7 +20,7 @@ fprintf(fileID,'%i %i\r\n',A);
 
 fclose(fileID);
 %% 
-fileID = fopen("C:\Users\Kaiming's Jam\source\repos\Delaunay_triangle\Delaunay_triangle\data.txt",'r');
+fileID = fopen("data.txt",'r');
 formatSpec = '%f';
 A = fscanf(fileID,formatSpec);
 min = -1e5;
@@ -37,7 +37,7 @@ daspect([1 1 1])
 hold on;
 %% 
 hold on;
-fileID2 = fopen("C:\Users\Kaiming's Jam\source\repos\Delaunay_triangle\Delaunay_triangle\result.txt",'r');
+fileID2 = fopen("result.txt",'r');
 B = fscanf(fileID2,formatSpec);
 
 vx = [];

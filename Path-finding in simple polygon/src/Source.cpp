@@ -12,7 +12,7 @@ using namespace std;
 
 int read(std::vector<point*>&p, point& start_point, point& end_point) {
 	ifstream in;
-	in.open("data1.txt");
+        in.open("data.txt");
 	int size;
 	point* point_to_add;
 	in >> start_point.x >> start_point.y;

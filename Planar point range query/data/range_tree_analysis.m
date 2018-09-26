@@ -1,4 +1,4 @@
-%% This is generate the data for voronoi graph generation
+%% This is generate the data for planar point range query
 clear all;
 sitenum = 1000;
 windownum = 2000;
@@ -8,7 +8,7 @@ max_v = 1e5;
 
 x = randi([min_v,max_v],sitenum,1)';
 y = randi([min_v,max_v],sitenum,1)';
-fileID = fopen("C:\Users\Kaiming's Jam\source\repos\Range_tree\Range_tree\data.txt",'w');
+fileID = fopen("data.txt",'w');
 fprintf(fileID,'%i %i\r\n',sitenum, windownum);
 A = [x;y];
 fprintf(fileID,'%i %i\r\n',A);
@@ -65,7 +65,7 @@ axis([min_v-10 max_v+10 min_v-10 max_v+10]);
 %% 
 hold on;
 formatSpec = '%f';
-fileID2 = fopen("C:\Users\Kaiming's Jam\source\repos\Range_tree\Range_tree\result.txt",'r');
+fileID2 = fopen("result.txt",'r');
 B = fscanf(fileID2,formatSpec)';
 diff = B-count;
 diff_max = sum(abs(diff));

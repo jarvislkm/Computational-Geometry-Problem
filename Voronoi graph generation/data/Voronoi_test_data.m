@@ -7,7 +7,7 @@ max_v = 1e5;
 x = randi([min_v,max_v],sitenum,1)';
 y = randi([min_v,max_v],sitenum,1)';
 y(1,1:10) = max(y');
-fileID = fopen("C:\Users\Kaiming's Jam\source\repos\Voronoi_graph\Voronoi_graph\data.txt",'w');
+fileID = fopen("data.txt",'w');
 fprintf(fileID,'%i\r\n',sitenum);
 A = [x;y];
 fprintf(fileID,'%i %i\r\n',A);
@@ -21,7 +21,7 @@ fprintf(fileID,'%i %i\r\n',A);
 
 fclose(fileID);
 %% 
-fileID = fopen("C:\Users\Kaiming's Jam\source\repos\Voronoi_graph\Voronoi_graph\data.txt",'r');
+fileID = fopen("data.txt",'r');
 formatSpec = '%f';
 A = fscanf(fileID,formatSpec);
 min_v = -1e4;
@@ -38,7 +38,7 @@ daspect([1 1 1])
 hold on;
 %% 
 hold on;
-fileID2 = fopen("C:\Users\Kaiming's Jam\source\repos\Voronoi_graph\Voronoi_graph\result.txt",'r');
+fileID2 = fopen("result.txt",'r');
 B = fscanf(fileID2,formatSpec);
 
 vx = [];
@@ -54,7 +54,7 @@ axis([min_v-10 max_v+10 min_v-10 max_v+10]);
 %% 
 
 hold on;
-fileID2 = fopen("C:\Users\Kaiming's Jam\source\repos\Voronoi_graph\Voronoi_graph\result_test.txt",'r');
+fileID2 = fopen("result_test.txt",'r');
 B = fscanf(fileID2,formatSpec);
 
 vx = [];

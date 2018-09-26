@@ -1,5 +1,6 @@
 #pragma once
 #include "Point.h"
+#include <cmath>
 
 class segment {
 public:
@@ -14,14 +15,14 @@ public:
 			double dx = (center - position);
 			if (type == circle_upper) {
 				if (dx <= r && -r <= dx) {
-					temp = left_end.y + sqrt(r*r - dx*dx);
+                                        temp = left_end.y + std::sqrt(r*r - dx*dx);
 					return temp;
 				}
 				else return temp = -1e12;
 			}
 			else {
 				if (dx <= r && -r <= dx) {
-					temp = left_end.y - sqrt(r*r - dx*dx);
+                                        temp = left_end.y - std::sqrt(r*r - dx*dx);
 					return temp;
 				}
 				else return temp = 1e12;

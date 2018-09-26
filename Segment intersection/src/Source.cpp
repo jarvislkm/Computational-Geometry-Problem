@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <tchar.h>
+//#include <tchar.h>
 #include <fstream>
 #include <iostream>
 #include <vector>
@@ -427,18 +427,18 @@ int main()
 		default:
 			break;
 		}
-		cout << "This is event: " << ++event_count << " operation type: " << handle->type << " line type: " << handle->s1.type << " posi:" << handle->event_posi << endl;
-		status_tree.traverse(status_tree.root);
-		for (auto re : result) {
-			cout << *re;
-		}
-		cout << endl;
+		// cout << "This is event: " << ++event_count << " operation type: " << handle->type << " line type: " << handle->s1.type << " posi:" << handle->event_posi << endl;
+		// status_tree.traverse(status_tree.root);
+		// for (auto re : result) {
+		// 	cout << *re;
+		// }
+		// cout << endl;
 		delete handle;
 	}
 	sort(result.begin(), result.end(), left_comp);
 	result.erase(unique(result.begin(), result.end(), left_unique), result.end());
 	intersection_in_left = result.size();
-	cout << intersection_in_left;
+	// cout << intersection_in_left;
 	write(result);
 	for (auto re : result) {
 		delete re;

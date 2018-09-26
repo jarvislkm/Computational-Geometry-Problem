@@ -44,13 +44,13 @@ long long to_left(Point a, Point b, Point c) {
 }
 
 int main(int argc, char* argv[]) {
-        if(argc < 2){
-                cout<<"Please indicate input file."<<endl;
-                return 0;
-        }
         long long number;
         vector<Point> data;
-        read(number, data, argv[1]);
+        char* name = "data.txt";
+        if(argc >= 2){
+            name = argv[1];
+        }
+        read(number, data, name);
         vector<Point> upper_hull;
         vector<Point> lower_hull;
         vector<long long> hull_index;

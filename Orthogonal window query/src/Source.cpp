@@ -10,8 +10,8 @@
 #include "interval_tree.h"
 
 #define _CRTDBG_MAP_ALLOC  
-#include <stdlib.h>  
-#include <crtdbg.h>  
+//#include <stdlib.h>
+//#include <crtdbg.h>
 
 void read(long &num, long& num_win,std::vector<Segment>& s_v_h,std::vector<Point>& p_v_h,std::vector<Segment>& s_v_v,std::vector<Point>& p_v_v,std::vector<Window>& w_v) {
 	std::ifstream in;
@@ -120,6 +120,6 @@ int main() {
 		}
 		out.close();
 	}
-	_CrtDumpMemoryLeaks();
+//	_CrtDumpMemoryLeaks();
 	return 0;
 }

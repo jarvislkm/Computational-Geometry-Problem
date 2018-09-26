@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.7.1)
 
-project(convex-hull)
+project(Path-finding-in-simple-polygon)
 
 set(CMAKE_CXX_STANDARD 11)
 

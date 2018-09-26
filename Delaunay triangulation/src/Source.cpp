@@ -80,21 +80,12 @@ void read(int & number, std::vector<site>& site_point, int & test_point_num, std
 	double a, b;
 	while (s < number) {
 		in >> a >> b;
-		a = a / 10;
-		b = b / 10;
+                a = a;
+                b = b;
 		site to_add(a, b, s++);
 		site_point.push_back(to_add);
 	}
-	in >> test_point_num;
-	s = 0;
-	while (s<test_point_num) {
-		in >> a >> b;
-		a = a / 10;
-		b = b / 10;
-		s++;
-		point to_add(a, b);
-		test_point.push_back(to_add);
-	}
+	in.close();
 }
 
 int main() {
@@ -177,16 +168,14 @@ int main() {
 		}
 	}
 
-	cl.position -= 4000;
+	cl.position -= 40000;
 	coast_node* work = cl.root;
 	std::vector<vertex* > out_vertex;
 	traverse(work, cl.position, out_vertex);  // This is to set all out vertex
 
-	ofstream out;
-	out.open("result.txt"); // This is to cout the result file for matlab;
 	for (auto f : face_vec) {
 		half_edge* start = f->inc_edge;
-		int count = 0;
+		long int count = 0;
 		while (start->pre && start->pre != f->inc_edge) {
 			start = start->pre;
 		}
@@ -194,60 +183,28 @@ int main() {
 		do
 		{
 			start->inc_face = f;
-			out << start->ori->x << " " << start->ori->y << endl;
-			out << start->twin->ori->x << " " << start->twin->ori->y << endl;
 			start = start->succ;
 			count++;
 		} while (start && start != record);
 	}
-	out.close();
 
-	out.open("result_test.txt");
-	int count = 1;
-	for (auto q : test_point) { // This is to calculate the point in each hall; step by step method find the neighbor is closest to target. 
-		face* test_face = face_vec.at(face_vec.size() / 2); //start from the center point
-		bool stop = true;
-		while (stop) {
-			half_edge* start = test_face->inc_edge;
-			while (start->pre && start->pre != test_face->inc_edge) {
-				start = start->pre;
-			}
-			half_edge* record = start;
-			if (!in_face(q, test_face) ) {
-				double length_r = INFINITY;
-				face* next = 0;
-				int id_r;
-				do
-				{
-					site m = site_point[start->twin->inc_face->id];
-					double length = (m.p.x - q.x)*(m.p.x - q.x) + (m.p.y - q.y)*(m.p.y - q.y);
-					if (length < length_r) {
-						length_r = length;
-						next = start->twin->inc_face;
-						id_r = start->twin->inc_face->id;
-					}
-					start = start->succ;
-				} while (start && start != record);
-				test_face = next;
-				cout << "id: " << id_r << endl;
-			  }
-			  else {
-//						int num = test_face->id;
-						stop = false;
-						//do
-						//{
-						//	if (in_face(q, start->twin->inc_face)) {
-						//		if (start->twin->inc_face->id < num) { test_face = start->twin->inc_face; }
-						//	}
-						//	start = start->succ;
-						//} while (start && start != record);
-					}
-		  }
-//		out << site_point[test_face->id].id << endl;
-		out << q.x << " " << q.y << endl;
-		out << site_point.at(test_face->id).p.x << " " << site_point.at(test_face->id).p.y << endl;
+	ofstream out;
+	out.open("result.txt");
+	long long int sum = 0;
+	for (long int i = 0; i < edge_vec.size(); i += 2) {
+		long int id_a = edge_vec.at(i)->inc_face->id;
+		long int id_b = edge_vec.at(i)->twin->inc_face->id;
+		long int real_a = site_point.at(id_a).id + 1;
+                out << site_point.at(id_a).p.x << " " << site_point.at(id_a).p.y << " ";
+		long int real_b = site_point.at(id_b).id + 1;
+		out << site_point.at(id_b).p.x << " " << site_point.at(id_b).p.y << endl;
+		sum += real_a;
+		sum += real_b;
 	}
-	cout << "ending...";
+	long long int result_f = edge_vec.size() / 2 + 1;
+	long long int result = sum%result_f;
+	cout << result;
+
 	while (1) { int s; }
 	out.close();
 	return 0;
