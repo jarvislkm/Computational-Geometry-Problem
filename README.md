@@ -12,5 +12,4 @@ This repository contains my understanding and code for Computational Geometry Co
 * Orthogonal Segment Window Query<br />
 
 ## Build:
-Build with cmake and make in ./build  
-program/data.txt/result.txt all stored in ./build/bin
+Build with cmake and g++. Find output file in ./build/bin
